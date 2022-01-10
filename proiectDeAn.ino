@@ -41,7 +41,8 @@ int winner = 0;  //0 = Remiza, 1 = Om, 2 = IA
 boolean buttonEnabled = true;
 boolean mode = true;
 
-int board[]={0,0,0,0,0,0,0,0,0};// pozitiile ocupate: 0 celula goala, 1 om, 2 IA
+int board[]={0,0,0,0,0,0,0,0,0};//pozitiile ocupate: 0-celula goala, 1-om, 2-IA
+
 void resetGame(){
   buttonEnabled = false;
   for(int i=0;i<9;i++)
@@ -57,7 +58,7 @@ void drawStartScreen(){
   tft.fillScreen(BLACK);
   tft.drawRect(0,0,319,240,WHITE);
   
-  //Print "Tic Tac Toe" Text
+  //textul "Tic Tac Toe"
   tft.setCursor(30,100);
   tft.setTextColor(WHITE);
   tft.setTextSize(4);
@@ -72,9 +73,8 @@ void drawStartScreen(){
   
 }
 
-void createStartButton()
-{
-    //Create Red Button
+void createStartButton(){
+    //butonul rosu
   tft.fillRect(60,180, 200, 40, RED);
   tft.drawRect(60,180,200,40,WHITE);
   tft.setCursor(80,188);
@@ -83,15 +83,13 @@ void createStartButton()
   tft.print("Start Joc");
 }
 
-void initDisplay()
-{
+void initDisplay(){
   tft.reset();
   tft.begin(0x9341);
   tft.setRotation(1);
 }
 
-void drawGameScreen()
-{
+void drawGameScreen(){
    tft.fillScreen(BLACK);
    tft.drawRect(0,0,319,240,WHITE);
    drawVerticalLine(125);
@@ -100,8 +98,7 @@ void drawGameScreen()
    drawHorizontalLine(150);
 }
 
-void drawGameOverScreen()
-{
+void drawGameOverScreen(){
   tft.fillScreen(BLACK);
   tft.drawRect(0,0,318,241,WHITE);
   tft.setCursor(15,30);
@@ -139,8 +136,6 @@ void drawGameOverScreen()
 
    pinMode(XM, OUTPUT);
    pinMode(YP, OUTPUT);
-
-   
 }
 
 void createPlayAgainButton(){
@@ -552,6 +547,32 @@ int checkOpponent5v2(){
   }
 }
 
+int checkOpponent7(){
+  if (board[1]==2 && board[4]==2 && board[5]==2){
+    int v2[]={0,8};
+    int randMove =random(2); 
+    int c=v2[randMove];
+    return c;
+  }else if (board[7]==2 && board[4]==2 && board[5]==2){
+    int v2[]={2,6};
+    int randMove =random(2); 
+    int c=v2[randMove];
+    return c;
+  }else if (board[1]==2 && board[4]==2 && board[3]==2){
+    int v2[]={2,6};
+    int randMove =random(2); 
+    int c=v2[randMove];
+    return c;
+  }else if (board[7]==2 && board[4]==2 && board[3]==2){
+    int v2[]={0,8};
+    int randMove =random(2); 
+    int c=v2[randMove];
+    return c;
+  }else{
+    return 100;
+  }
+}
+
 void arduinoMove(){
   int b = 0;
   Serial.print("\nMutarea Arduino:");
@@ -612,6 +633,36 @@ void arduinoMove(){
           drawCpuMove(nextMove);
           b=1;
         }
+
+      }else if (moves==7){
+        int nextMove = checkOpponentWin();
+        if(nextMove == 100){  
+            nextMove = checkOpponent7();
+            if(nextMove == 100){    
+            int randomMove =random(9); 
+            if (board[randomMove]==0){  
+                delay(1000);
+                board[randomMove]=2;
+                Serial.print(randomMove);
+                Serial.println();
+                drawCpuMove(randomMove);
+                b=1;
+              }
+            }else if (board[nextMove]==0){  
+              delay(1000);
+              board[nextMove]=2;
+              Serial.print(nextMove);
+              Serial.println();
+              drawCpuMove(nextMove);
+              b=1;
+            }  
+        }else{
+          delay(1000);
+          board[nextMove]=2;
+          drawCpuMove(nextMove);
+          b=1;
+        }
+        
       }else{
         int nextMove = checkOpponentWin();
         if(nextMove == 100){  
@@ -872,12 +923,11 @@ void setup() {
 void loop(){
   TSPoint p = ts.getPoint();  
 
-  if(gameScreen==3)
-   {
+  if(gameScreen==3){
     buttonEnabled =true;
    }
   
-  if (p.z > ts.pressureThreshhold) {
+  if (p.z > ts.pressureThreshhold){
 
    p.x = map(p.x, TS_MAXX, TS_MINX, 0, 320);
    p.y = map(p.y, TS_MAXY, TS_MINY, 0, 240);
@@ -886,10 +936,9 @@ void loop(){
    Serial.print("\tY = "); Serial.print(p.y);
    Serial.print("\n");
        
-   if(p.x>60 && p.x<260 && p.y>180 && p.y<220 && buttonEnabled)
-   {
+   if(p.x>60 && p.x<260 && p.y>180 && p.y<220 && buttonEnabled){
     buttonEnabled = false;
-    Serial.println("Button Pressed");
+    Serial.println("Butonul a fost apasat");
     resetGame();  
    pinMode(XM, OUTPUT);
    pinMode(YP, OUTPUT);
