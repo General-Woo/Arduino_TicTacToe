@@ -41,8 +41,7 @@ int winner = 0;  //0 = Remiza, 1 = Om, 2 = IA
 boolean buttonEnabled = true;
 boolean mode = true;
 
-int board[]={0,0,0,0,0,0,0,0,0};// holds position data 0 is blank, 1 human, 2 is computer
-
+int board[]={0,0,0,0,0,0,0,0,0};// pozitiile ocupate: 0 celula goala, 1 om, 2 IA
 void resetGame(){
   buttonEnabled = false;
   for(int i=0;i<9;i++)
